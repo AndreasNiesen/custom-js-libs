@@ -1,4 +1,23 @@
-// Primary Vector-Class
+/**********************************************
+ * Table of content:
+ *  00 General Purpose Functions
+ *  01 Matrices and Vectors
+ *  02 Randomness and Noise
+ * 
+ *  -1 Dev-Console availabilities
+ **********************************************/
+
+/**********************************************
+ * 00 General Purpose Functions
+ **********************************************/
+export function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+/**********************************************
+ * 01 Matrices and Vectors
+ **********************************************/
+// Base Vector-Class
 export class Vector {
   // Creates vector-object, proxied to allow direct reading without using vArray.
   constructor(...content) {
@@ -183,7 +202,7 @@ export class Vector {
   }
 }
 
-// Primary Matrix-Class
+// Base Matrix-Class
 export class Matrix {
   // Creates matrix-object, proxied to allow direct reading of values.
   constructor(...content) {
@@ -366,9 +385,11 @@ export class Matrix {
 
 // Specific Vectors
 export class Vec2 extends Vector {
+  // TODO: fill in.
 }
 
 export class Vec3 extends Vector {
+  // TODO: fill in.
 }
 
 // Specific Matrices
@@ -440,11 +461,11 @@ export class Mat3x3 extends Matrix {
   }
 
   static getScale() {
-    throw new Error("Mat3x3::getScale not yet implemented");
+    throw new Error("Mat3x3::getScale not yet implemented");  // TODO: implement.
   }
 
   static getRotation() {
-    throw new Error("Mat3x3::getRotation not yet implemented");
+    throw new Error("Mat3x3::getRotation not yet implemented");  // TODO: implement.
   }
 
   get array2D() {
@@ -460,11 +481,103 @@ export class Mat3x3 extends Matrix {
   }
 }
 
-// Dev-Console availability for testing purposes.
-window.Vec2 = Vec2;
-window.Vec3 = Vec3;
+/**********************************************
+ * 02 Randomness and Noise
+ **********************************************/
+// Pseudorandom Number Generator (seeded)
+/**
+ * Creates and returns the PRNG.
+ * List of available algorithms can be found through the availableAlgorithms getter.
+ * 
+ * @param {Number} [seed] - Number to be used as seed, randomized seed if undefined.
+ * @param {String} [algo="sfc32"] - Algorithm to be used.
+ */
+export function prngCreator(seed, algo) {
+  seed = seed === undefined || typeof(seed) !== "number" ? Math.floor(Math.random() * 1337 ^ 0xDEADBEEF) : seed;
+  seed >>>= 0;  // Casts the seed to an unsigned Integer.
+
+  const availableAlgos = ["sfc32", "Mulberry32", "xoshiro128**"];  // TODO: more implementations.
+
+  if (algo === undefined || typeof(algo) !== "string" || availableAlgos.filter(a => a.toLowerCase() === algo.toLowerCase()).length < 1) {
+    if (algo !== undefined) console.warn(`prngCreator - the supplied value for the algo parameter "${algo}" is not available and has been changed to "sfc32".`);
+    algo = "sfc32";
+  }
+
+  let rng;
+
+  switch(algo.toLowerCase()) {
+    case "sfc32":
+      // Creates a 32-bit pseudorandom number and squishes it into the [0, 1) range.
+      // Seed-padding-numbers: 
+      // a: phi = 0x1.61803398875..
+      // b: pi = 0x3.243F6A8884C3C..
+      // c: e = 0x2.B7E132B55E..
+      {let a = 0x9E3779B8, b = 0x243F6A88, c = 0xB7E132B5, d = seed;
+      rng = function() {
+        a >>>= 0, b >>>= 0, c >>>= 0, d >>>= 0;
+        let t = (a + b) | 0;
+        a = b ^ b >>> 9;
+        b = c + (c << 3) | 0;
+        c = (c << 21 | c >>> 11);
+        d = d + 1 | 0;
+        t = t + d | 0;
+        c = c + t | 0;
+        return (t >>> 0) / 4294967296;  // 4294967296 = 32-bit-max-int + 1.
+      };}
+      break;
+
+    case "mulberry32":
+      // Creates a 32-bit pseudorandom number and squishes it into the [0, 1) range.
+      rng = function() {
+        let z = (seed += 0x6D2B79F5);
+        z = Math.imul(z ^ (z >>> 15), z | 1);
+        z ^= z + Math.imul(z ^ (z >> 7), z | 61);
+        return ((z ^ (z >>> 14)) >>> 0) / 4294967296;
+      };
+      break;
+
+    case "xoshiro128**":
+      // Creates a 32-bit pseudorandom number and squishes it into the [0, 1) range.
+      // Seed-padding-numbers: 
+      // a: phi = 0x1.61803398875..
+      // b: pi = 0x3.243F6A8884C3C..
+      // c: e = 0x2.B7E132B55E..
+      {let a = 0x9E3779B8, b = 0x243F6A88, c = 0xB7E132B5, d = seed;
+      rng = function() {
+        let t = b << 9;
+        let r = a * 5;
+        r = (r << 7 | r >>> 25) * 9;
+        c ^= a;
+        d ^= b;
+        b ^= c;
+        a ^= d;
+        c ^= t;
+        d = d << 11 | d >>> 21;
+        return (r >>> 0) / 4294967296;
+      };}
+      break;
+    default:
+      throw new Error("prngCreator - Should not happen! If it still does, bad sourcecode on my part.. Sorry!");
+  }
+
+  return rng;
+}
+
+
+/**********************************************
+ * -1 Dev-Console availabilities
+ **********************************************/
+// 00
+window.clamp = clamp;
+
+// 01
+// window.Vec2 = Vec2;
+// window.Vec3 = Vec3;
 window.Mat2x2 = Mat2x2;
 window.Mat3x3 = Mat3x3;
-
 window.Matrix = Matrix;
 window.Vector = Vector;
+
+// 02
+// window.perlin = perlin;
+window.prngCreator = prngCreator;
