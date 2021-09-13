@@ -84,7 +84,6 @@ export class Vector {
    * 
    * @param {Number||Vector||Matrix} value - What this vector will be multiplied by.
    * @param {Boolean} [self=false] - If self, change values of this vector; else create new vector with results.
-   * 
    * @return {Vector||undefined}
    */
   multiply(value, self = false) {
@@ -131,7 +130,6 @@ export class Vector {
    * 
    * @param {Vector} v2 - vector to be added.
    * @param {Boolean} [self=false] - If self, change values of this vector; else create new vector with results.
-   * 
    * @return {Vector||undefined}
    */
   add(v2, self = false) {
@@ -155,7 +153,6 @@ export class Vector {
    * Creates the dot-/scalar-product of two vectors and returns it.
    * 
    * @param {Vector} v2 - Vector to create the product with.
-   * 
    * @return {Number}
    */
   dotProduct(v2) {
@@ -171,7 +168,6 @@ export class Vector {
    * Normalizes this vector.
    * 
    * @param {Boolean} [self=true] - If self, change values of this vector; else create new vector with results.
-   * 
    * @return {Vector||undefined}
    */
   normalize(self = true) {
@@ -322,7 +318,6 @@ export class Matrix {
    * Creates identity matrix of given size.
    * 
    * @param {Number} size - amount of rows and columns of resulting matrix (f.e. 4 leads to a 4x4 matrix).
-   * 
    * @return {Matrix}
    */
   static getIdentity(size) {
@@ -340,7 +335,6 @@ export class Matrix {
    * 
    * @param {Vector||Matrix} m1 - First matrix.
    * @param {Vector||Matrix} m2 - Second matrix.
-   * 
    * @return {Vector||Matrix}
   */
   static dotProduct(m1, m2) {
@@ -491,6 +485,7 @@ export class Mat3x3 extends Matrix {
  * 
  * @param {Number} [seed] - Number to be used as seed, randomized seed if undefined.
  * @param {String} [algo="sfc32"] - Algorithm to be used.
+ * @return {function} Pseudorandom number generator based on the seed and algo.
  */
 export function prngCreator(seed, algo) {
   seed = seed === undefined || typeof(seed) !== "number" ? Math.floor(Math.random() * 1337 ^ 0xDEADBEEF) : seed;
