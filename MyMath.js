@@ -493,7 +493,7 @@ export function prngCreator(seed, algo) {
 
   const availableAlgos = ["sfc32", "Mulberry32", "xoshiro128**"];  // TODO: more implementations.
 
-  if (algo === undefined || typeof(algo) !== "string" || availableAlgos.filter(a => a.toLowerCase() === algo.toLowerCase()).length < 1) {
+  if (algo === undefined || typeof(algo) !== "string" || availableAlgos.some(a => a.toLowerCase() === algo.toLowerCase())) {
     if (algo !== undefined) console.warn(`prngCreator - the supplied value for the algo parameter "${algo}" is not available and has been changed to "sfc32".`);
     algo = "sfc32";
   }
