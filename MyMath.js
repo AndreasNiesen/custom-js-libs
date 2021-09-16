@@ -150,6 +150,30 @@ export class Vector {
   }
 
   /**
+   * Subtracts another vector and this vector.
+   * 
+   * @param {Vector} v2 - vector to be subtracted.
+   * @param {Boolean} [self=false] - If self, change values of this vector; else create new vector with results.
+   * @return {Vector||undefined}
+   */
+  sub(v2, self = false) {
+    if (self) {
+      for (let i = 0; i < this.length; i++) {
+        this.vArray[i] -= v2.vArray[i];
+      }
+
+      return;
+    } else {
+      let out = [];
+      for (let i = 0; i < this.length; i++) {
+        out.push(this.vArray[i] - v2.vArray[i]);
+      }
+
+      return new Vector(out);
+    }
+  }
+
+  /**
    * Creates the dot-/scalar-product of two vectors and returns it.
    * 
    * @param {Vector} v2 - Vector to create the product with.
