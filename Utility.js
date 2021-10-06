@@ -33,3 +33,20 @@ export function* range(start, end, step) {
     i += step;
   }
 }
+
+/**
+ * Sleeps an async function in an non-blocking manner.
+ * 
+ * @param {Number} ms - Time to sleep in milliseconds.
+ * @returns {Promise}
+ * 
+ * @example
+ * // Calling the test() logs "hello" after 5 seconds.
+ * async function test() {
+ *   await sleep(5000);
+ *   console.log("hello");
+ * }
+ */
+export function sleep(ms) {
+  return new Promise(resolve => {setTimeout(resolve, ms)});
+}
