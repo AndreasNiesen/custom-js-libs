@@ -13,7 +13,7 @@
  * // logs: 2, 2.5, 3, 3.5, 4, 4.5
  * for (let i of range(2, 5, 0.5)) console.log(i);
  */
-function* range(start, end, step) {
+export function* range(start, end, step) {
   let i, e;
   if (end === undefined && start === undefined) {
     i = 0;
