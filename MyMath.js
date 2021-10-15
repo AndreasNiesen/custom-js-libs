@@ -75,7 +75,7 @@ export class Vector {
 
   *[Symbol.iterator]() {
     for (let i = 0; i < this.length; i++) {
-      yield this.mArray[i];
+      yield this.vArray[i];
     }
   }
 
