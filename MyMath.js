@@ -432,7 +432,7 @@ export class Mat2x2 extends Matrix {
   }
 
   static getScaling(x = 1, y = 1) {
-    return new Matrix2x2(
+    return new Mat2x2(
       [x, 0],
       [0, y]
       );
