@@ -416,7 +416,7 @@ export class Mat2x2 extends Matrix {
     if (typeof(in1) === "number") {
       return super(2, 2, in1, in2, in3, in4);
     } else {
-      return super(in1, in2, in3, in4);
+      return super(...arguments);
     }
   }
 
@@ -466,24 +466,48 @@ export class Mat2x2 extends Matrix {
 }
 
 export class Mat3x3 extends Matrix {
+  constructor(in1, in2, in3, in4, in5, in6, in7, in8, in9) {
+    if (typeof(in1) === "number") {
+      return super(3, 3, in1, in2, in3, in4, in5, in6, in7, in8, in9);
+    } else {
+      return super(...arguments);
+    }
+  }
+
   toString() {
     return "Mat3x3";
   }
 
   static getIdentity() {
-    return new Matrix3x3(
+    return new Mat3x3(
       [1, 0, 0],
       [0, 1, 0],
       [0, 0, 1]
       );
   }
 
-  static getScale() {
-    throw new Error("Mat3x3::getScale not yet implemented");  // TODO: implement.
+  static getTranslation(x = 0, y = 0) {
+    return new Mat3x3(
+      [1, 0, x],
+      [0, 1, y],
+      [0, 0, 1]
+      );
+  }
+  
+  static getScaling(x = 1, y = 1) {
+    return new Mat3x3(
+      [x, 0, 0],
+      [0, y, 0],
+      [0, 0, 1]
+      );
   }
 
-  static getRotation() {
-    throw new Error("Mat3x3::getRotation not yet implemented");  // TODO: implement.
+  static getRotation(angle) {
+    return new Mat3x3(
+      [Math.cos(angle), -Math.sin(angle), 0],
+      [Math.sin(angle), Math.cos(angle),  0],
+      [0,               0,                1]
+      );
   }
 
   get array2D() {
@@ -496,6 +520,34 @@ export class Mat3x3 extends Matrix {
       ...this.mArray[1],
       ...this.mArray[2]
     ];
+  }
+
+  static dotProduct(A, B) {
+    if (A instanceof Mat3x3 && B instanceof Mat3x3) {
+      let m00, m01, m02;
+      let m10, m11, m12;
+      let m20, m21, m22;
+
+      m00 = A.mArray[0][0] * B.mArray[0][0] + A.mArray[0][1] * B.mArray[1][0] + A.mArray[0][2] * B.mArray[2][0];
+      m01 = A.mArray[0][0] * B.mArray[0][1] + A.mArray[0][1] * B.mArray[1][1] + A.mArray[0][2] * B.mArray[2][1];
+      m02 = A.mArray[0][0] * B.mArray[0][2] + A.mArray[0][1] * B.mArray[1][2] + A.mArray[0][2] * B.mArray[2][2];
+
+      m10 = A.mArray[1][0] * B.mArray[0][0] + A.mArray[1][1] * B.mArray[1][0] + A.mArray[1][2] * B.mArray[2][0];
+      m11 = A.mArray[1][0] * B.mArray[0][1] + A.mArray[1][1] * B.mArray[1][1] + A.mArray[1][2] * B.mArray[2][1];
+      m12 = A.mArray[1][0] * B.mArray[0][2] + A.mArray[1][1] * B.mArray[1][2] + A.mArray[1][2] * B.mArray[2][2];
+
+      m20 = A.mArray[2][0] * B.mArray[0][0] + A.mArray[2][1] * B.mArray[1][0] + A.mArray[2][2] * B.mArray[2][0];
+      m21 = A.mArray[2][0] * B.mArray[0][1] + A.mArray[2][1] * B.mArray[1][1] + A.mArray[2][2] * B.mArray[2][1];
+      m22 = A.mArray[2][0] * B.mArray[0][2] + A.mArray[2][1] * B.mArray[1][2] + A.mArray[2][2] * B.mArray[2][2];
+
+      return new Mat2x2(
+        [m00, m01, m02],
+        [m10, m11, m12],
+        [m20, m21, m22]
+      );
+    } else {
+      return Matrix.dotProduct(A, B);
+    }
   }
 }
 
