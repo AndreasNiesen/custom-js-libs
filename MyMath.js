@@ -514,6 +514,14 @@ export class Mat3x3 extends Matrix {
       );
   }
 
+  static getProjection(w, h) {
+    return new Mat3x3(
+      [2 / w, 0     , 0],
+      [0    , -2 / h, 0],
+      [-1   , 1     , 1]
+      );
+  }
+
   get array2D() {
     return this.mArray;
   }
@@ -586,7 +594,7 @@ export class Mat4x4 extends Matrix {
       );
   }
   
-  static getScaling(x = 1, y = 1) {
+  static getScaling(x = 1, y = 1, z = 1) {
     return new Mat4x4(
       [x, 0, 0, 0],
       [0, y, 0, 0],
@@ -595,13 +603,50 @@ export class Mat4x4 extends Matrix {
       );
   }
 
-  static getRotation(angle) {
+  static getXRotation(angle) {
+    let c = Math.cos(angle);
+    let s = Math.sin(angle);
+
     return new Mat4x4(
-      [Math.cos(angle), -Math.sin(angle), 0, 0],
-      [Math.sin(angle), Math.cos(angle),  0, 0],
-      [0,               0,                1, 0],
-      [0,               0,                0, 1]
+      [1, 0, 0, 0],
+      [0, c, s, 0],
+      [0, -s, c, 0],
+      [0, 0, 0, 1]
       );
+  }
+
+  static getYRotation(angle) {
+    let c = Math.cos(angle);
+    let s = Math.sin(angle);
+
+    return new Mat4x4(
+      [c, 0, -s, 0],
+      [0, 1, 0, 0],
+      [s, 0, c, 0],
+      [0, 0, 0, 1]
+      );
+  }
+  
+  static getZRotation(angle) {
+    let c = Math.cos(angle);
+    let s = Math.sin(angle);
+
+    return new Mat4x4(
+      [c, s, 0, 0],
+      [-s, c, 0, 0],
+      [0, 0, 1, 0],
+      [0, 0, 0, 1]
+      );
+  }
+
+  // orthographic projection matrix
+  static getProjection(left, right, bottom, top, near, far) {
+    return new Mat4x4(
+      [2 / (right - left),              0,                               0,                           0],
+      [0,                               2 / (top - bottom),              0,                           0],
+      [0,                               0,                               2 / (near - far),            0],
+      [(left + right) / (left - right), (bottom + top) / (bottom - top), (near + far) / (near - far), 1]
+    );
   }
 
   get array2D() {
