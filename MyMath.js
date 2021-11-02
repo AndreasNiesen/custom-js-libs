@@ -414,7 +414,7 @@ export class Vec3 extends Vector {
 export class Mat2x2 extends Matrix {
   constructor(in1, in2, in3, in4) {
     if (typeof(in1) === "number") {
-      return super(2, 2, in1, in2, in3, in4);
+      return super(2, 2, ...arguments);
     } else {
       return super(...arguments);
     }
@@ -468,7 +468,7 @@ export class Mat2x2 extends Matrix {
 export class Mat3x3 extends Matrix {
   constructor(in1, in2, in3, in4, in5, in6, in7, in8, in9) {
     if (typeof(in1) === "number") {
-      return super(3, 3, in1, in2, in3, in4, in5, in6, in7, in8, in9);
+      return super(3, 3, ...arguments);
     } else {
       return super(...arguments);
     }
@@ -540,10 +540,111 @@ export class Mat3x3 extends Matrix {
       m21 = A.mArray[2][0] * B.mArray[0][1] + A.mArray[2][1] * B.mArray[1][1] + A.mArray[2][2] * B.mArray[2][1];
       m22 = A.mArray[2][0] * B.mArray[0][2] + A.mArray[2][1] * B.mArray[1][2] + A.mArray[2][2] * B.mArray[2][2];
 
-      return new Mat2x2(
+      return new Mat3x3(
         [m00, m01, m02],
         [m10, m11, m12],
         [m20, m21, m22]
+      );
+    } else {
+      return Matrix.dotProduct(A, B);
+    }
+  }
+}
+
+export class Mat4x4 extends Matrix {
+  constructor(in1, in2, in3, in4, in5, in6, in7, in8, in9, in10, in11, in12, in13, in14, in15, in16) {
+    if (typeof(in1) === "number") {
+      return super(4, 4, ...arguments);
+    } else {
+      return super(...arguments);
+    }
+  }
+
+  toString() {
+    return "Mat4x4";
+  }
+
+  static getIdentity() {
+    return new Mat4x4(
+      [1, 0, 0, 0],
+      [0, 1, 0, 0],
+      [0, 0, 1, 0],
+      [0, 0, 0, 1]
+      );
+  }
+
+  static getTranslation(x = 0, y = 0, z = 0) {
+    return new Mat4x4(
+      [1, 0, 0, x],
+      [0, 1, 0, y],
+      [0, 0, 1, z],
+      [0, 0, 0, 1]
+      );
+  }
+  
+  static getScaling(x = 1, y = 1) {
+    return new Mat4x4(
+      [x, 0, 0, 0],
+      [0, y, 0, 0],
+      [0, 0, z, 0],
+      [0, 0, 0, 1]
+      );
+  }
+
+  static getRotation(angle) {
+    return new Mat4x4(
+      [Math.cos(angle), -Math.sin(angle), 0, 0],
+      [Math.sin(angle), Math.cos(angle),  0, 0],
+      [0,               0,                1, 0],
+      [0,               0,                0, 1]
+      );
+  }
+
+  get array2D() {
+    return this.mArray;
+  }
+
+  get array() {
+    return [
+      ...this.mArray[0],
+      ...this.mArray[1],
+      ...this.mArray[2],
+      ...this.mArray[3],
+    ];
+  }
+
+  static dotProduct(A, B) {
+    if (A instanceof Mat4x4 && B instanceof Mat4x4) {
+      let m00, m01, m02, m03;
+      let m10, m11, m12, m13;
+      let m20, m21, m22, m23;
+      let m30, m31, m32, m33;
+
+      m00 = A.mArray[0][0] * B.mArray[0][0] + A.mArray[0][1] * B.mArray[1][0] + A.mArray[0][2] * B.mArray[2][0] + A.mArray[0][3] * B.mArray[3][0];
+      m01 = A.mArray[0][0] * B.mArray[0][1] + A.mArray[0][1] * B.mArray[1][1] + A.mArray[0][2] * B.mArray[2][1] + A.mArray[0][3] * B.mArray[3][1];
+      m02 = A.mArray[0][0] * B.mArray[0][2] + A.mArray[0][1] * B.mArray[1][2] + A.mArray[0][2] * B.mArray[2][2] + A.mArray[0][3] * B.mArray[3][2];
+      m03 = A.mArray[0][0] * B.mArray[0][3] + A.mArray[0][1] * B.mArray[1][3] + A.mArray[0][2] * B.mArray[2][3] + A.mArray[0][3] * B.mArray[3][3];
+
+      m10 = A.mArray[1][0] * B.mArray[0][0] + A.mArray[1][1] * B.mArray[1][0] + A.mArray[1][2] * B.mArray[2][0] + A.mArray[1][3] * B.mArray[3][0];
+      m11 = A.mArray[1][0] * B.mArray[0][1] + A.mArray[1][1] * B.mArray[1][1] + A.mArray[1][2] * B.mArray[2][1] + A.mArray[1][3] * B.mArray[3][1];
+      m12 = A.mArray[1][0] * B.mArray[0][2] + A.mArray[1][1] * B.mArray[1][2] + A.mArray[1][2] * B.mArray[2][2] + A.mArray[1][3] * B.mArray[3][2];
+      m13 = A.mArray[1][0] * B.mArray[0][3] + A.mArray[1][1] * B.mArray[1][3] + A.mArray[1][2] * B.mArray[2][3] + A.mArray[1][3] * B.mArray[3][3];
+
+      m20 = A.mArray[2][0] * B.mArray[0][0] + A.mArray[2][1] * B.mArray[1][0] + A.mArray[2][2] * B.mArray[2][0] + A.mArray[2][3] * B.mArray[3][0];
+      m21 = A.mArray[2][0] * B.mArray[0][1] + A.mArray[2][1] * B.mArray[1][1] + A.mArray[2][2] * B.mArray[2][1] + A.mArray[2][3] * B.mArray[3][1];
+      m22 = A.mArray[2][0] * B.mArray[0][2] + A.mArray[2][1] * B.mArray[1][2] + A.mArray[2][2] * B.mArray[2][2] + A.mArray[2][3] * B.mArray[3][2];
+      m23 = A.mArray[2][0] * B.mArray[0][3] + A.mArray[2][1] * B.mArray[1][3] + A.mArray[2][2] * B.mArray[2][3] + A.mArray[2][3] * B.mArray[3][3];
+
+      m30 = A.mArray[3][0] * B.mArray[0][0] + A.mArray[3][1] * B.mArray[1][0] + A.mArray[3][2] * B.mArray[2][0] + A.mArray[3][3] * B.mArray[3][0];
+      m31 = A.mArray[3][0] * B.mArray[0][1] + A.mArray[3][1] * B.mArray[1][1] + A.mArray[3][2] * B.mArray[2][1] + A.mArray[3][3] * B.mArray[3][1];
+      m32 = A.mArray[3][0] * B.mArray[0][2] + A.mArray[3][1] * B.mArray[1][2] + A.mArray[3][2] * B.mArray[2][2] + A.mArray[3][3] * B.mArray[3][2];
+      m33 = A.mArray[3][0] * B.mArray[0][3] + A.mArray[3][1] * B.mArray[1][3] + A.mArray[3][2] * B.mArray[2][3] + A.mArray[3][3] * B.mArray[3][3];
+
+      return new Mat4x4(
+        [m00, m01, m02, m03],
+        [m10, m11, m12, m13],
+        [m20, m21, m22, m23],
+        [m30, m31, m32, m33]
       );
     } else {
       return Matrix.dotProduct(A, B);
