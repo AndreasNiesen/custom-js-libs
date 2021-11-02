@@ -14,6 +14,10 @@ export function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
+export function rangeMapping(value, oldMin, oldMax, newMin, newMax) {
+  return (value - oldMin) / (oldMax - oldMin) * (newMax - newMin) + newMin;
+}
+
 /**********************************************
  * 01 Matrices and Vectors
  **********************************************/
