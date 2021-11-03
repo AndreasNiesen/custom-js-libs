@@ -639,13 +639,29 @@ export class Mat4x4 extends Matrix {
       );
   }
 
+  static getXYZRotation(xAngle, yAngle, zAngle) {
+    return Mat4x4.dotProduct(Mat4x4.dotProduct(Mat4x4.getZRotation(zAngle), Mat4x4.getYRotation(yAngle)), Mat4x4.getXRotation(xAngle));
+  }
+
   // orthographic projection matrix
-  static getProjection(left, right, bottom, top, near, far) {
+  static getOrthographic(left, right, bottom, top, near, far) {
     return new Mat4x4(
       [2 / (right - left),              0,                               0,                           0],
       [0,                               2 / (top - bottom),              0,                           0],
       [0,                               0,                               2 / (near - far),            0],
       [(left + right) / (left - right), (bottom + top) / (bottom - top), (near + far) / (near - far), 1]
+    );
+  }
+
+  static getPerspective(fieldOfViewRadians, aspect, near, far) {
+    let f = Math.tan(Math.PI * 0.5 - fieldOfViewRadians * 0.5);
+    let rangeInv = 1.0 / (near - far);
+
+    return new Mat4x4(
+      [f / aspect, 0, 0,                         0],
+      [0,          f, 0,                         0],
+      [0,          0, (near + far) * rangeInv,  -1],
+      [0,          0, near * far * rangeInv * 2, 0]
     );
   }
 
