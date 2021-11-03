@@ -18,6 +18,14 @@ export function rangeMapping(value, oldMin, oldMax, newMin, newMax) {
   return (value - oldMin) / (oldMax - oldMin) * (newMax - newMin) + newMin;
 }
 
+export function degToRad(deg) {
+  return (deg * Math.PI / 180);
+}
+
+export function radToDeg(rad) {
+  return (rad * 180 / Math.PI);
+}
+
 /**********************************************
  * 01 Matrices and Vectors
  **********************************************/
@@ -30,16 +38,11 @@ export class Vector {
 
     if (content[0] instanceof Array) {
       this.length = content[0].length;
-      
-      for (let i = 0; i < content[0].length; i++) {
-        this.vArray.push(content[0][i]);
-      }
+      this.vArray.push(...content[0]);
+
     } else if (typeof(content[0]) === "number") {
       this.length = content.length;
-
-      for (let i = 0; i < content.length; i++) {
-        this.vArray.push(content[i]);
-      }
+      this.vArray.push(...content);
     }
 
     return new Proxy(this, {
@@ -88,7 +91,8 @@ export class Vector {
    * 
    * @param {Number||Vector||Matrix} value - What this vector will be multiplied by.
    * @param {Boolean} [self=false] - If self, change values of this vector; else create new vector with results.
-   * @return {Vector||undefined}
+   * 
+   * @return {Vector}
    */
   multiply(value, self = false) {
     // Hadamard-esque vector product.
@@ -98,7 +102,7 @@ export class Vector {
           this.vArray[i] *= value.vArray[i];
         }
 
-        return;
+        return this;
       } else {
         let out = [];
         for (let i = 0; i < this.length; i++) {
@@ -117,7 +121,7 @@ export class Vector {
           this.vArray[i] = out[i];
         }
 
-        return;
+        return this;
       } else {
         return out;
       }
@@ -134,7 +138,8 @@ export class Vector {
    * 
    * @param {Vector} v2 - vector to be added.
    * @param {Boolean} [self=false] - If self, change values of this vector; else create new vector with results.
-   * @return {Vector||undefined}
+   * 
+   * @return {Vector}
    */
   add(v2, self = false) {
     if (self) {
@@ -142,7 +147,7 @@ export class Vector {
         this.vArray[i] += v2.vArray[i];
       }
 
-      return;
+      return this;
     } else {
       let out = [];
       for (let i = 0; i < this.length; i++) {
@@ -158,7 +163,8 @@ export class Vector {
    * 
    * @param {Vector} v2 - vector to be subtracted.
    * @param {Boolean} [self=false] - If self, change values of this vector; else create new vector with results.
-   * @return {Vector||undefined}
+   * 
+   * @return {Vector}
    */
   sub(v2, self = false) {
     if (self) {
@@ -166,7 +172,7 @@ export class Vector {
         this.vArray[i] -= v2.vArray[i];
       }
 
-      return;
+      return this;
     } else {
       let out = [];
       for (let i = 0; i < this.length; i++) {
@@ -196,10 +202,10 @@ export class Vector {
    * Normalizes this vector.
    * 
    * @param {Boolean} [self=true] - If self, change values of this vector; else create new vector with results.
-   * @return {Vector||undefined}
+   * @return {Vector}
    */
   normalize(self = true) {
-    return this.multiply((1 / this.magnitude), self);
+    return this.scale((1 / this.magnitude), self);
   }
 
   /**
@@ -207,6 +213,8 @@ export class Vector {
    * 
    * @param {Number} value - Number to scale by.
    * @param {Boolean} [self=true] - If self, change values of this vector; else create new vector with results.
+   * 
+   * @return {Vector}
    */
   scale(value, self = true) {
     if (self) {
@@ -214,7 +222,7 @@ export class Vector {
         this.vArray[i] *= value;
       }
 
-      return;
+      return this;
     } else {
       let out = [];
       for (let i = 0; i < this.length; i++) {
@@ -411,7 +419,88 @@ export class Vec2 extends Vector {
 }
 
 export class Vec3 extends Vector {
-  // TODO: fill in.
+  toString() {
+    return "Vector3";
+  }
+
+  get x() {
+    return this.vArray[0];
+  }
+  set x(value) {
+    this.vArray[0] = value;
+  }
+
+  get y() {
+    return this.vArray[1];
+  }
+  set y(value) {
+    this.vArray[1] = value;
+  }
+
+  get z() {
+    return this.vArray[2];
+  }
+  set z(value) {
+    this.vArray[2] = value;
+  }
+
+  get magnitude() {
+    return Math.sqrt(this.vArray[0] * this.vArray[0] + this.vArray[1] * this.vArray[1] + this.vArray[2] * this.vArray[2]);
+  }
+
+  /**
+   * Calculates coordinate based cross product of this with another vector.
+   * 
+   * @param {Vec3||Array} v2 - Vector of size 3 to cross this vector with.
+   * @param {Boolean} [self=false] - If self, changes this vector. If not self, creates new Vec3 with results.
+   * 
+   * @return {Vec3}
+   */
+  crossProduct(v2, self = false) {
+    let o0 = this.vArray[1] * v2[2] - this.vArray[2] * v2[1];
+    let o1 = this.vArray[2] * v2[0] - this.vArray[0] * v2[2];
+    let o2 = this.vArray[0] * v2[1] - this.vArray[1] * v2[0];
+    if (self) {
+      this.vArray[0] = o0;
+      this.vArray[1] = o1;
+      this.vArray[2] = o2;
+      return this;
+    } else {
+      return new Vec3(o0, o1, o2);
+    }
+  }
+
+  add(v2, self = false) {
+    let o0 = this.vArray[0] + v2[0];
+    let o1 = this.vArray[1] + v2[1];
+    let o2 = this.vArray[2] + v2[2];
+
+    if (self) {
+      this.vArray[0] = o0;
+      this.vArray[1] = o1;
+      this.vArray[2] = o2;
+
+      return this;
+    } else {
+      return new Vec3(o0, o1, o2);
+    }
+  }
+
+  sub(v2, self = false) {
+    let o0 = this.vArray[0] - v2[0];
+    let o1 = this.vArray[1] - v2[1];
+    let o2 = this.vArray[2] - v2[2];
+
+    if (self) {
+      this.vArray[0] = o0;
+      this.vArray[1] = o1;
+      this.vArray[2] = o2;
+
+      return this;
+    } else {
+      return new Vec3(o0, o1, o2);
+    }
+  }
 }
 
 // Specific Matrices
@@ -809,7 +898,7 @@ window.clamp = clamp;
 
 // 01
 // window.Vec2 = Vec2;
-// window.Vec3 = Vec3;
+window.Vec3 = Vec3;
 window.Mat2x2 = Mat2x2;
 window.Mat3x3 = Mat3x3;
 window.Matrix = Matrix;
